@@ -20,4 +20,6 @@ int set_nonblocking(int fd); /* set fd unblock. */
 /* client send 'hello' to server. */
 int proc_client(const char *ip, int port, char *data);
 
+int set_addr(char *ifname, char *ipaddr);
+
 #endif  //__COMMON_H__

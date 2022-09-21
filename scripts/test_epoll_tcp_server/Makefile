@@ -18,7 +18,10 @@ $(TARGET): $(OBJS)
 rootfs:
 	$(CC) $(CFLAGS) $(INC) $(SRCS) -o init -static -lpthread
 	find init | cpio -o -Hnewc | gzip -9 > rootfs.o
-	qemu-system-x86_64 -kernel ../../arch/x86/boot/bzImage -nographic -initrd rootfs.o --append "console=ttyS0 nokaslr root=/dev/ram" -nographic -s -S
+	qemu-system-x86_64 -kernel ../../arch/x86/boot/bzImage -nographic -initrd rootfs.o --append "console=ttyS0 nokaslr root=/dev/ram" -nographic
+
+busybox:
+	qemu-system-x86_64 -kernel ../../arch/x86/boot/bzImage -nographic -initrd busybox.img --append "console=ttyS0 nokaslr root=/dev/ram" -nographic
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@

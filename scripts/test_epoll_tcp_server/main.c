@@ -17,8 +17,8 @@
 #define WORKER_CNT 2       /* fork workers to listen. */
 #define SEND_DATA "hello." /* client send to server's test data. */
 
-#define SERVER_PORT 5001      /* server's listen port. */
-#define SERVER_IP "127.0.0.1" /* server's ip. */
+#define SERVER_PORT 22       /* server's listen port. */
+#define SERVER_IP "10.0.2.2" /* server's ip. */
 
 /* fork a child process to run epoll server. */
 void proc(const char *ip, int port);
@@ -36,6 +36,9 @@ int main(int argc, char **argv) {
         port = atoi(argv[2]);
     }
 
+    char *ifname = "eth0";
+    char *ipaddr = "10.0.2.0";
+    set_addr(ifname, ipaddr);
     LOG("pls input 's' to run server or 'c' to run client!");
 
     while (1) {
@@ -43,7 +46,7 @@ int main(int argc, char **argv) {
 
         if (strcmp(buf, "s") == 0) {
             proc(ip, port);
-        } else if (strcmp(buf, "c") == 0) {
+        } else if (strcmp(buf, "c") == 0) {           
             proc_client(ip, port, SEND_DATA);
         } else {
             LOG("pls input 's' to run server or 'c' to run client!");

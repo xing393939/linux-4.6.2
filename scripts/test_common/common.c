@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <net/if.h>
+#include <net/route.h>
 #include <stdarg.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -13,7 +14,8 @@
 #define LOOP_IP "127.0.0.1"
 
 int log_data(int is_err, const char *file,
-             const char *func, int file_line, int err, const char *fmt, ...) {
+             const char *func, int file_line, int err, const char *fmt, ...)
+{
     int off;
     va_list ap;
     char buf[64];
@@ -30,10 +32,13 @@ int log_data(int is_err, const char *file,
     off = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S.", tm);
     snprintf(buf + off, sizeof(buf) - off, "%03d", (int)tv.tv_usec / 1000);
 
-    if (is_err) {
+    if (is_err)
+    {
         printf("[%d][%s][%s][%s:%d][errno: %d, errstr: %s] %s\n",
                getpid(), buf, file, func, file_line, err, strerror(err), msg);
-    } else {
+    }
+    else
+    {
         printf("[%d][%s][%s][%s:%d] %s\n",
                getpid(), buf, file, func, file_line, msg);
     }
@@ -41,7 +46,8 @@ int log_data(int is_err, const char *file,
     return 1;
 }
 
-int bring_up_net_interface(const char *ip) {
+int bring_up_net_interface(const char *ip)
+{
     int fd;
     struct ifreq ifreqlo;
     struct sockaddr_in sa;
@@ -58,7 +64,8 @@ int bring_up_net_interface(const char *ip) {
     ioctl(fd, SIOCSIFFLAGS, &ifreqlo);
     close(fd);
 
-    if (ip != NULL && strlen(ip) != 0 && strcmp(ip, LOOP_IP) != 0) {
+    if (ip != NULL && strlen(ip) != 0 && strcmp(ip, LOOP_IP) != 0)
+    {
         LOG("bring up interface: eth0, ip: %s", ip);
         sa.sin_family = AF_INET;
         sa.sin_addr.s_addr = inet_addr(ip);
@@ -74,7 +81,8 @@ int bring_up_net_interface(const char *ip) {
         ((unsigned char *)&ifreqlo.ifr_hwaddr.sa_data)[3] = 0xa8;
         ((unsigned char *)&ifreqlo.ifr_hwaddr.sa_data)[4] = 0x28;
         ((unsigned char *)&ifreqlo.ifr_hwaddr.sa_data)[5] = 0x05;
-        if (ioctl(fd, SIOCSIFFLAGS, &ifreqlo) < 0) {
+        if (ioctl(fd, SIOCSIFFLAGS, &ifreqlo) < 0)
+        {
             LOG_SYS_ERR("ioctl(SIOCGIFCONF) failed!");
             return 0;
         }
@@ -93,18 +101,22 @@ int bring_up_net_interface(const char *ip) {
 
     ifc.ifc_len = sizeof(ifs);
     ifc.ifc_req = ifs;
-    if (ioctl(s, SIOCGIFCONF, &ifc) < 0) {
+    if (ioctl(s, SIOCGIFCONF, &ifc) < 0)
+    {
         LOG_SYS_ERR("ioctl(SIOCGIFCONF) failed!");
         return 0;
     }
 
     ifend = ifs + (ifc.ifc_len / sizeof(struct ifreq));
-    for (ifr = ifc.ifc_req; ifr < ifend; ifr++) {
+    for (ifr = ifc.ifc_req; ifr < ifend; ifr++)
+    {
         LOG("interface: %s", ifr->ifr_name);
 
-        if (ifr->ifr_addr.sa_family == AF_INET) {
+        if (ifr->ifr_addr.sa_family == AF_INET)
+        {
             strncpy(ifreq.ifr_name, ifr->ifr_name, sizeof(ifreq.ifr_name));
-            if (ioctl(s, SIOCGIFHWADDR, &ifreq) < 0) {
+            if (ioctl(s, SIOCGIFHWADDR, &ifreq) < 0)
+            {
                 LOG_SYS_ERR("SIOCGIFHWADDR(%s): %m", ifreq.ifr_name);
                 return 0;
             }
@@ -124,17 +136,96 @@ int bring_up_net_interface(const char *ip) {
     return 0;
 }
 
-int set_nonblocking(int fd) {
+int set_nonblocking(int fd)
+{
     int val = fcntl(fd, F_GETFL);
     val |= O_NONBLOCK;
-    if (fcntl(fd, F_SETFL, val) < 0) {
+    if (fcntl(fd, F_SETFL, val) < 0)
+    {
         LOG_SYS_ERR("set non block failed! fd: %d.", fd);
         return -1;
     }
     return 0;
 }
 
-int proc_client(const char *ip, int port, char *data) {
+int set_addr(char *ifname, char *ipaddr)
+{
+    int fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (fd < 0)
+    {
+        LOG_SYS_ERR("socket   error");
+        return -1;
+    }
+    struct ifreq ifr;
+    memset(&ifr, 0, sizeof(ifr));
+    strcpy(ifr.ifr_name, ifname);
+    struct sockaddr_in *sin = (struct sockaddr_in *)&ifr.ifr_addr;
+    sin->sin_family = AF_INET;
+    // IP地址
+    if (inet_aton(ipaddr, &(sin->sin_addr)) < 0)
+    {
+        LOG_SYS_ERR("inet_aton   error");
+        return -2;
+    }
+    if (ioctl(fd, SIOCSIFADDR, &ifr) < 0)
+    {
+        LOG_SYS_ERR("ioctl   SIOCSIFADDR   error");
+        return -3;
+    }
+
+    // 子网掩码
+    char *mask = "255.0.0.0";
+    if (inet_aton(mask, &(sin->sin_addr)) < 0)
+    {
+        LOG_SYS_ERR("inet_pton   error");
+        return -4;
+    }
+    if (ioctl(fd, SIOCSIFNETMASK, &ifr) < 0)
+    {
+        LOG_SYS_ERR("ioctl");
+        return -5;
+    }
+
+    // 启用网卡
+    memset(&ifr, 0, sizeof(ifr));
+    strcpy(ifr.ifr_name, ifname);
+    ifr.ifr_flags |= IFF_UP;
+    if (ioctl(fd, SIOCSIFFLAGS, &ifr) < 0)
+    {
+        LOG_SYS_ERR("ioctl");
+        return -5;
+    }
+
+    // 网关
+    struct rtentry rt;
+    memset(&rt, 0, sizeof(rt));
+    struct sockaddr_in *sockinfo = (struct sockaddr_in *)&rt.rt_gateway;
+    sockinfo->sin_family = AF_INET;
+    sockinfo->sin_addr.s_addr = inet_addr("0.0.0.0");
+
+    sockinfo = (struct sockaddr_in *)&rt.rt_dst;
+    sockinfo->sin_family = AF_INET;
+    sockinfo->sin_addr.s_addr = inet_addr("10.0.0.0");
+
+    sockinfo = (struct sockaddr_in *)&rt.rt_genmask;
+    sockinfo->sin_family = AF_INET;
+    sockinfo->sin_addr.s_addr = inet_addr(mask);
+
+    rt.rt_flags = RTF_UP;
+    rt.rt_dev = ifname;
+    if (ioctl(fd, SIOCADDRT, &rt) < 0)
+    {
+        LOG_SYS_ERR("set ip addr failed");
+        close(fd);
+        return -1;
+    }
+    LOG("set ip addr ok");
+    close(fd);
+    return 0;
+}
+
+int proc_client(const char *ip, int port, char *data)
+{
     LOG("run client...");
 
     int fd, ret;
@@ -151,7 +242,8 @@ int proc_client(const char *ip, int port, char *data) {
     memset(&addr.sin_zero, 0, 8);
 
     fd = socket(PF_INET, SOCK_STREAM, AF_UNSPEC);
-    if (fd < 0) {
+    if (fd < 0)
+    {
         LOG_SYS_ERR("create new socket failed!");
         return 0;
     }
@@ -159,7 +251,8 @@ int proc_client(const char *ip, int port, char *data) {
     LOG("client connect to server! ip: %s, port: %d.", ip, port);
 
     ret = connect(fd, (struct sockaddr *)&addr, sizeof(struct sockaddr));
-    if (ret == -1) {
+    if (ret == -1)
+    {
         LOG_SYS_ERR("connect failed!");
         close(fd);
         return 0;
@@ -167,14 +260,16 @@ int proc_client(const char *ip, int port, char *data) {
 
     LOG("begin to send data to server, fd: %d", fd);
     ret = write(fd, buf, strlen(buf));
-    if (ret == -1) {
+    if (ret == -1)
+    {
         LOG_SYS_ERR("send failed! fd: %d", fd);
         return 0;
     }
     LOG("send data to server, fd: %d, data: %s", fd, buf);
 
     ret = read(fd, buf, sizeof(buf));
-    if (ret == -1) {
+    if (ret == -1)
+    {
         LOG_SYS_ERR("read data failed! fd: %d.", fd);
         return 0;
     }
