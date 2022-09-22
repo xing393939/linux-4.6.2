@@ -95,7 +95,7 @@ void run_server(int worker_index) {
         return;
     }
 
-    memset(g_clients, 0, MAX_CLIENT_CNT);
+    memset(g_clients, 0, MAX_CLIENT_CNT * sizeof(g_clients));
     ees = (struct epoll_event *)calloc(EVENTS_SIZE, sizeof(struct epoll_event));
 
     while (1) {

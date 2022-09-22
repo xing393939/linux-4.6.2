@@ -17,8 +17,8 @@
 #define WORKER_CNT 2       /* fork workers to listen. */
 #define SEND_DATA "hello." /* client send to server's test data. */
 
-#define SERVER_PORT 22       /* server's listen port. */
-#define SERVER_IP "10.0.2.2" /* server's ip. */
+#define SERVER_PORT 5000      /* server's listen port. */
+#define SERVER_IP "127.0.0.1" /* server's ip. */
 
 /* fork a child process to run epoll server. */
 void proc(const char *ip, int port);
@@ -26,29 +26,35 @@ void proc(const char *ip, int port);
 /* fork workers to listen. */
 int workers(int worker_cnt, const char *ip, int port);
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     char buf[64] = {0};
     int port = SERVER_PORT;
     const char *ip = SERVER_IP;
 
-    if (argc >= 3) {
+    if (argc >= 3)
+    {
         ip = argv[1];
         port = atoi(argv[2]);
     }
 
-    char *ifname = "eth0";
-    char *ipaddr = "10.0.2.0";
-    set_addr(ifname, ipaddr);
+    set_addr("eth0", "10.0.2.0");
     LOG("pls input 's' to run server or 'c' to run client!");
 
-    while (1) {
+    while (1)
+    {
         scanf("%s", buf);
 
-        if (strcmp(buf, "s") == 0) {
+        if (strcmp(buf, "s") == 0)
+        {
             proc(ip, port);
-        } else if (strcmp(buf, "c") == 0) {           
-            proc_client(ip, port, SEND_DATA);
-        } else {
+        }
+        else if (strcmp(buf, "c") == 0)
+        {
+            proc_client("10.0.2.2", 22, SEND_DATA);
+        }
+        else
+        {
             LOG("pls input 's' to run server or 'c' to run client!");
         }
     }
@@ -56,46 +62,61 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void proc(const char *ip, int port) {
+void proc(const char *ip, int port)
+{
     int pid;
     bring_up_net_interface(ip);
 
     pid = fork();
-    if (pid == 0) {
+    if (pid == 0)
+    {
         /* child */
         workers(WORKER_CNT, ip, port);
-    } else if (pid > 0) {
+    }
+    else if (pid > 0)
+    {
         /* parent */
         LOG("pls input 'c' to run client!");
-    } else {
+    }
+    else
+    {
         /* error */
         LOG_SYS_ERR("fork failed!");
         exit(-1);
     }
 }
 
-int workers(int worker_cnt, const char *ip, int port) {
+int workers(int worker_cnt, const char *ip, int port)
+{
     LOG("workers...");
 
     int i, cnt, pid;
 
     cnt = worker_cnt;
-    for (i = 0; i < cnt; i++) {
-        if (init_server(i, ip, port) < 0) {
+    for (i = 0; i < cnt; i++)
+    {
+        if (init_server(i, ip, port) < 0)
+        {
             LOG("init server failed!");
             return 0;
         }
     }
 
-    for (i = 0; i < worker_cnt; i++) {
+    for (i = 0; i < worker_cnt; i++)
+    {
         pid = fork();
-        if (pid == 0) {
+        if (pid == 0)
+        {
             /* child. */
             run_server(i);
-        } else if (pid > 0) {
+        }
+        else if (pid > 0)
+        {
             /* parent */
             LOG("for child pid: %d\n", pid);
-        } else {
+        }
+        else
+        {
             /* error */
             LOG_SYS_ERR("fork failed!");
             exit(-1);
