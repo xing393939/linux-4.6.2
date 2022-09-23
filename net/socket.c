@@ -708,7 +708,7 @@ void __sock_recv_ts_and_drops(struct msghdr *msg, struct sock *sk,
 }
 EXPORT_SYMBOL_GPL(__sock_recv_ts_and_drops);
 
-static inline int sock_recvmsg_nosec(struct socket *sock, struct msghdr *msg,
+static inline int __attribute__((optimize("Og"))) sock_recvmsg_nosec(struct socket *sock, struct msghdr *msg,
 				     size_t size, int flags)
 {
 	return sock->ops->recvmsg(sock, msg, size, flags);
