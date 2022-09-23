@@ -53,6 +53,10 @@ int main(int argc, char **argv)
         {
             proc_client("10.0.2.2", 22, SEND_DATA);
         }
+        else if (strcmp(buf, "u") == 0)
+        {
+            proc_udp_client("10.0.2.2", 5000, SEND_DATA);
+        }
         else
         {
             LOG("pls input 's' to run server or 'c' to run client!");

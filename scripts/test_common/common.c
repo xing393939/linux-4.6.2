@@ -279,3 +279,39 @@ int proc_client(const char *ip, int port, char *data)
     LOG("close client, fd: %d", fd);
     return 1;
 }
+
+int proc_udp_client(const char *ip, int port, char *hello)
+{
+    int sockfd;
+    char buffer[1024];
+    struct sockaddr_in servaddr;
+
+    // Creating socket file descriptor
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        perror("socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    memset(&servaddr, 0, sizeof(servaddr));
+
+    // Filling server information
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(port);
+    servaddr.sin_addr.s_addr = inet_addr(ip);  
+
+    sendto(sockfd, (const char *)hello, strlen(hello),
+           MSG_CONFIRM, (const struct sockaddr *)&servaddr,
+           sizeof(servaddr));
+    printf("Hello message sent.\n");
+
+    socklen_t len;
+    ssize_t n = recvfrom(sockfd, (char *)buffer, 1024,
+                 MSG_WAITALL, (struct sockaddr *)&servaddr,
+                 &len);
+    buffer[n] = '\0';
+    printf("Server : %s\n", buffer);
+
+    close(sockfd);
+    return 0;
+}
