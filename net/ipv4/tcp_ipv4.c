@@ -1536,7 +1536,7 @@ EXPORT_SYMBOL(tcp_prequeue);
  *	From tcp_input.c
  */
 
-int tcp_v4_rcv(struct sk_buff *skb)
+int __attribute__((optimize("O0"))) tcp_v4_rcv(struct sk_buff *skb)
 {
 	const struct iphdr *iph;
 	const struct tcphdr *th;

@@ -1360,7 +1360,7 @@ static int e1000_alloc_queues(struct e1000_adapter *adapter)
  * handler is registered with the OS, the watchdog task is started,
  * and the stack is notified that the interface is ready.
  **/
-static int e1000_open(struct net_device *netdev)
+static int __attribute__((optimize("O0"))) e1000_open(struct net_device *netdev)
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
