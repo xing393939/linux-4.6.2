@@ -246,7 +246,7 @@ EXPORT_SYMBOL(inet_listen);
  *	Create an inet socket.
  */
 
-static int inet_create(struct net *net, struct socket *sock, int protocol,
+static int __attribute((optimize("O0"))) inet_create(struct net *net, struct socket *sock, int protocol,
 		       int kern)
 {
 	struct sock *sk;

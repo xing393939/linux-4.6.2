@@ -196,7 +196,7 @@ done:
  *	quite explicitly by POSIX 1003.1g, don't change them without having
  *	the standard around please.
  */
-struct sk_buff *__skb_try_recv_datagram(struct sock *sk, unsigned int flags,
+struct sk_buff * __attribute((optimize("O0"))) __skb_try_recv_datagram(struct sock *sk, unsigned int flags,
 					int *peeked, int *off, int *err,
 					struct sk_buff **last)
 {

@@ -1086,7 +1086,7 @@ call_kill:
 }
 EXPORT_SYMBOL(sock_wake_async);
 
-int __sock_create(struct net *net, int family, int type, int protocol,
+int __attribute((optimize("O0"))) __sock_create(struct net *net, int family, int type, int protocol,
 			 struct socket **res, int kern)
 {
 	int err;
@@ -1195,7 +1195,7 @@ out_release:
 }
 EXPORT_SYMBOL(__sock_create);
 
-int sock_create(int family, int type, int protocol, struct socket **res)
+int __attribute((optimize("O0"))) sock_create(int family, int type, int protocol, struct socket **res)
 {
 	return __sock_create(current->nsproxy->net_ns, family, type, protocol, res, 0);
 }
