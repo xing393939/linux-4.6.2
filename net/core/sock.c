@@ -2020,7 +2020,7 @@ static void __release_sock(struct sock *sk)
  * We check receive queue before schedule() only as optimization;
  * it is very likely that release_sock() added new data.
  */
-int sk_wait_data(struct sock *sk, long *timeo, const struct sk_buff *skb)
+int __attribute((optimize("O0"))) sk_wait_data(struct sock *sk, long *timeo, const struct sk_buff *skb)
 {
 	int rc;
 	DEFINE_WAIT(wait);

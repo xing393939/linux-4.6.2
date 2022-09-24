@@ -1559,7 +1559,7 @@ EXPORT_SYMBOL(tcp_read_sock);
  *	Probably, code can be easily improved even more.
  */
 
-int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
+int __attribute((optimize("O0"))) tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
 		int flags, int *addr_len)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
