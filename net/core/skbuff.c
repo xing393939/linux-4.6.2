@@ -4595,3 +4595,22 @@ failure:
 	return NULL;
 }
 EXPORT_SYMBOL(alloc_skb_with_frags);
+
+void pkt_hex_dump(struct sk_buff *skb)
+{
+	int l;
+	size_t len;
+	uint8_t *data, ch;
+
+	printk(KERN_INFO "pkt_hex_dump: ");
+	data = (uint8_t *)skb_mac_header(skb);
+	len = skb->tail - skb->mac_header;
+
+	for (l = 0; l < len; l++)
+	{
+		ch = data[l];
+		printk(KERN_CONT "%02X ", (uint32_t)ch);
+	}
+
+	printk(KERN_CONT "\n");
+}
