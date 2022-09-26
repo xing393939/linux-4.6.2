@@ -1376,7 +1376,7 @@ static struct sock *tcp_v4_cookie_check(struct sock *sk, struct sk_buff *skb)
  * This is because we cannot sleep with the original spinlock
  * held.
  */
-int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+int __attribute__((optimize("O0"))) tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
 {
 	struct sock *rsk;
 

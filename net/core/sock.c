@@ -2284,7 +2284,7 @@ static void sock_def_error_report(struct sock *sk)
 	rcu_read_unlock();
 }
 
-static void sock_def_readable(struct sock *sk)
+static void __attribute__((optimize("O0"))) sock_def_readable(struct sock *sk)
 {
 	struct socket_wq *wq;
 
