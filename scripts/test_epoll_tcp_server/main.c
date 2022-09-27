@@ -51,7 +51,8 @@ int main(int argc, char **argv)
         }
         else if (strcmp(buf, "c") == 0)
         {
-            proc_client("10.0.2.2", 22, SEND_DATA);
+            // proc_client("10.0.2.2", 22, SEND_DATA);
+            proc_client(SERVER_IP, SERVER_PORT, SEND_DATA);
         }
         else if (strcmp(buf, "u") == 0)
         {
@@ -94,10 +95,8 @@ int workers(int worker_cnt, const char *ip, int port)
 {
     LOG("workers...");
 
-    int i, cnt, pid;
-
-    cnt = worker_cnt;
-    for (i = 0; i < cnt; i++)
+    int i, pid;
+    for (i = 0; i < worker_cnt; i++)
     {
         if (init_server(i, ip, port) < 0)
         {
@@ -117,7 +116,7 @@ int workers(int worker_cnt, const char *ip, int port)
         else if (pid > 0)
         {
             /* parent */
-            LOG("for child pid: %d\n", pid);
+            LOG("for child pid: %d", pid);
         }
         else
         {
