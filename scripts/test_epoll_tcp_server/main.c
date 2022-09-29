@@ -56,7 +56,8 @@ int main(int argc, char **argv)
         }
         else if (strcmp(buf, "u") == 0)
         {
-            proc_udp_client("10.0.2.2", 5000, SEND_DATA);
+            // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
+            proc_udp_client("127.0.0.1", 5000, SEND_DATA);
         }
         else
         {

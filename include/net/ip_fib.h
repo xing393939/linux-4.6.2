@@ -258,7 +258,7 @@ struct fib_table *fib_get_table(struct net *net, u32 id);
 int __fib_lookup(struct net *net, struct flowi4 *flp,
 		 struct fib_result *res, unsigned int flags);
 
-static inline int fib_lookup(struct net *net, struct flowi4 *flp,
+static inline int __attribute((optimize("O0"))) fib_lookup(struct net *net, struct flowi4 *flp,
 			     struct fib_result *res, unsigned int flags)
 {
 	struct fib_table *tb;

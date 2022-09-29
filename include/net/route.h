@@ -82,7 +82,7 @@ static inline bool rt_is_output_route(const struct rtable *rt)
 	return rt->rt_is_input == 0;
 }
 
-static inline __be32 rt_nexthop(const struct rtable *rt, __be32 daddr)
+static inline __be32 __attribute((optimize("O0"))) rt_nexthop(const struct rtable *rt, __be32 daddr)
 {
 	if (rt->rt_gateway)
 		return rt->rt_gateway;
