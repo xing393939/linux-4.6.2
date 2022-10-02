@@ -22,5 +22,6 @@ int proc_client(const char *ip, int port, char *data);
 int proc_udp_client(const char *ip, int port, char *hello);
 
 int set_addr(char *ifname, char *ipaddr);
+char **get_argv(char *input);
 
-#endif  //__COMMON_H__
+#endif //__COMMON_H__

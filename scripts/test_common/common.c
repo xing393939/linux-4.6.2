@@ -298,7 +298,7 @@ int proc_udp_client(const char *ip, int port, char *hello)
     // Filling server information
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(port);
-    servaddr.sin_addr.s_addr = inet_addr(ip);  
+    servaddr.sin_addr.s_addr = inet_addr(ip);
 
     sendto(sockfd, (const char *)hello, strlen(hello),
            MSG_CONFIRM, (const struct sockaddr *)&servaddr,
@@ -307,11 +307,35 @@ int proc_udp_client(const char *ip, int port, char *hello)
 
     socklen_t len;
     ssize_t n = recvfrom(sockfd, (char *)buffer, 1024,
-                 MSG_WAITALL, (struct sockaddr *)&servaddr,
-                 &len);
+                         MSG_WAITALL, (struct sockaddr *)&servaddr,
+                         &len);
     buffer[n] = '\0';
     printf("Server : %s\n", buffer);
 
     close(sockfd);
     return 0;
+}
+
+char **get_argv(char *input)
+{
+    char *p1 = strtok(input, " ");
+    char *dst1[100] = {0};
+
+    if (!p1)
+    {
+        return 0;
+    }
+    int len = 0;
+    dst1[len++] = p1;
+    while ((p1 = strtok(NULL, " ")))
+    {
+        dst1[len++] = p1;
+    }
+    char **dst2 = (char **)calloc(len + 1, sizeof(char *));
+    for (int i = 0; i < len; i++)
+    {
+        dst2[i] = dst1[i];
+    }
+    dst2[len] = NULL;
+    return dst2;
 }

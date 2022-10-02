@@ -22,13 +22,14 @@
 
 /* fork a child process to run epoll server. */
 void proc(const char *ip, int port);
+void proc_busybox(char **arr);
 
 /* fork workers to listen. */
 int workers(int worker_cnt, const char *ip, int port);
 
 int main(int argc, char **argv)
 {
-    char buf[64] = {0};
+    char buf[1024] = {0};
     int port = SERVER_PORT;
     const char *ip = SERVER_IP;
 
@@ -38,12 +39,15 @@ int main(int argc, char **argv)
         port = atoi(argv[2]);
     }
 
+    mkdir("/sys", 0555);
+    mkdir("/proc", 0555);
     set_addr("eth0", "10.0.2.0");
     LOG("pls input 's' to run server or 'c' to run client!");
 
     while (1)
     {
-        scanf("%s", buf);
+        gets(buf);
+        char **arr = get_argv(buf);
 
         if (strcmp(buf, "s") == 0)
         {
@@ -59,6 +63,11 @@ int main(int argc, char **argv)
             // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
             proc_udp_client("127.0.0.1", 5000, SEND_DATA);
         }
+        else if (strcmp(arr[0], "busybox") == 0)
+        {
+            // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
+            proc_busybox(arr);
+        }
         else
         {
             LOG("pls input 's' to run server or 'c' to run client!");
@@ -66,6 +75,18 @@ int main(int argc, char **argv)
     }
 
     return 0;
+}
+
+void proc_busybox(char **arr)
+{
+    int pid = fork();
+    if (pid == 0)
+    {
+        if (execv("/busybox", arr) < 0)
+        {
+            LOG_SYS_ERR("execv error");
+        }
+    }
 }
 
 void proc(const char *ip, int port)
