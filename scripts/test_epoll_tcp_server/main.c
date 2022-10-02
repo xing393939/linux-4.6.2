@@ -29,49 +29,36 @@ int workers(int worker_cnt, const char *ip, int port);
 
 int main(int argc, char **argv)
 {
-    char buf[1024] = {0};
     int port = SERVER_PORT;
     const char *ip = SERVER_IP;
 
-    if (argc >= 3)
+    if (argc < 2)
     {
-        ip = argv[1];
-        port = atoi(argv[2]);
+        LOG("main error");
+        return -1;
     }
 
-    mkdir("/sys", 0555);
-    mkdir("/proc", 0555);
-    set_addr("eth0", "10.0.2.0");
-    LOG("pls input 's' to run server or 'c' to run client!");
-
-    while (1)
+    if (strcmp(argv[1], "s") == 0)
     {
-        gets(buf);
-        char **arr = get_argv(buf);
-
-        if (strcmp(buf, "s") == 0)
-        {
-            proc(ip, port);
-        }
-        else if (strcmp(buf, "c") == 0)
-        {
-            // proc_client("10.0.2.2", 22, SEND_DATA);
-            proc_client(SERVER_IP, SERVER_PORT, SEND_DATA);
-        }
-        else if (strcmp(buf, "u") == 0)
-        {
-            // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
-            proc_udp_client("127.0.0.1", 5000, SEND_DATA);
-        }
-        else if (strcmp(arr[0], "busybox") == 0)
-        {
-            // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
-            proc_busybox(arr);
-        }
-        else
-        {
-            LOG("pls input 's' to run server or 'c' to run client!");
-        }
+        proc(ip, port);
+    }
+    else if (strcmp(argv[1], "a") == 0)
+    {
+        set_addr("eth0", "10.0.2.0");
+    }
+    else if (strcmp(argv[1], "c") == 0)
+    {
+        // proc_client("10.0.2.2", 22, SEND_DATA);
+        proc_client(SERVER_IP, SERVER_PORT, SEND_DATA);
+    }
+    else if (strcmp(argv[1], "u") == 0)
+    {
+        // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
+        proc_udp_client("127.0.0.1", 5000, SEND_DATA);
+    }
+    else
+    {
+        LOG("pls input 's' to run server or 'c' to run client!");
     }
 
     return 0;
