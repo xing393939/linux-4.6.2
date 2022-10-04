@@ -197,6 +197,7 @@ int set_addr(char *ifname, char *ipaddr)
     }
 
     // 网关
+    /*
     struct rtentry rt;
     memset(&rt, 0, sizeof(rt));
     struct sockaddr_in *sockinfo = (struct sockaddr_in *)&rt.rt_gateway;
@@ -220,6 +221,7 @@ int set_addr(char *ifname, char *ipaddr)
         return -1;
     }
     LOG("set ip addr ok");
+    */
     close(fd);
     return 0;
 }
