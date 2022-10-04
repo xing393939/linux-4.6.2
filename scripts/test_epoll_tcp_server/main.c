@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     {
         proc(ip, port);
     }
-    else if (strcmp(argv[1], "a") == 0)
+    else if (strcmp(argv[1], "set") == 0)
     {
         set_addr("eth0", "10.0.2.0");
     }
@@ -53,8 +53,8 @@ int main(int argc, char **argv)
     }
     else if (strcmp(argv[1], "u") == 0)
     {
-        // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
-        proc_udp_client("127.0.0.1", 5000, SEND_DATA);
+        proc_udp_client("10.0.2.2", 5000, SEND_DATA);
+        // proc_udp_client("127.0.0.1", 5000, SEND_DATA);
     }
     else
     {

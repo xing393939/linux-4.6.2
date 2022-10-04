@@ -289,8 +289,7 @@ int proc_udp_client(const char *ip, int port, char *hello)
     // Creating socket file descriptor
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
-        perror("socket creation failed");
-        exit(EXIT_FAILURE);
+        LOG_SYS_ERR("socket creation failed");
     }
 
     memset(&servaddr, 0, sizeof(servaddr));
@@ -303,14 +302,15 @@ int proc_udp_client(const char *ip, int port, char *hello)
     sendto(sockfd, (const char *)hello, strlen(hello),
            MSG_CONFIRM, (const struct sockaddr *)&servaddr,
            sizeof(servaddr));
-    printf("Hello message sent.\n");
+    LOG("Hello message sent");
 
+    usleep(10000);
     socklen_t len;
     ssize_t n = recvfrom(sockfd, (char *)buffer, 1024,
-                         MSG_WAITALL, (struct sockaddr *)&servaddr,
+                         MSG_DONTWAIT, (struct sockaddr *)&servaddr,
                          &len);
     buffer[n] = '\0';
-    printf("Server : %s\n", buffer);
+    LOG("Server : %s", buffer);
 
     close(sockfd);
     return 0;
