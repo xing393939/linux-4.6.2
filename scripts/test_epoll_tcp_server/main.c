@@ -48,13 +48,13 @@ int main(int argc, char **argv)
     }
     else if (strcmp(argv[1], "c") == 0)
     {
-        // proc_client("10.0.2.2", 22, SEND_DATA);
+        //proc_client("10.0.2.2", 22, SEND_DATA);
         proc_client(SERVER_IP, SERVER_PORT, SEND_DATA);
     }
     else if (strcmp(argv[1], "u") == 0)
     {
-        proc_udp_client("10.0.2.2", 5000, SEND_DATA);
-        // proc_udp_client("127.0.0.1", 5000, SEND_DATA);
+        // proc_udp_client("10.0.2.2", 5000, SEND_DATA);
+        proc_udp_client("10.0.2.0", 5000, SEND_DATA);
     }
     else
     {

@@ -15,7 +15,7 @@ $(LIBS):
 	make -C $(LIB_DIR)
 
 %: %.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -static -o $@ $< $(LDFLAGS)
 
 clean:
 	$(RM) page-types slabinfo page_owner_sort

@@ -1361,6 +1361,7 @@ static struct sock *tcp_v4_cookie_check(struct sock *sk, struct sk_buff *skb)
 {
 #ifdef CONFIG_SYN_COOKIES
 	const struct tcphdr *th = tcp_hdr(skb);
+	printk("tcp_v4_cookie_check %d\n", th->syn);
 
 	if (!th->syn)
 		sk = cookie_v4_check(sk, skb);
@@ -1591,6 +1592,7 @@ lookup:
 			       th->dest);
 	if (!sk)
 		goto no_tcp_socket;
+	printk("\n%p sk->sk_state %d\n", sk, sk->sk_state);
 
 process:
 	if (sk->sk_state == TCP_TIME_WAIT)
