@@ -295,7 +295,7 @@ void sock_edemux(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(sock_edemux);
 
-struct sock *__inet_lookup_established(struct net *net,
+struct sock * __attribute__((optimize("O0"))) __inet_lookup_established(struct net *net,
 				  struct inet_hashinfo *hashinfo,
 				  const __be32 saddr, const __be16 sport,
 				  const __be32 daddr, const u16 hnum,

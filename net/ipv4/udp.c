@@ -1837,7 +1837,7 @@ static inline int udp4_csum_init(struct sk_buff *skb, struct udphdr *uh,
  *	All we need to do is get the socket, and then do a checksum.
  */
 
-int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+int __attribute__((optimize("O0"))) __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 		   int proto)
 {
 	struct sock *sk;
@@ -1896,6 +1896,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 	sk = __udp4_lib_lookup_skb(skb, uh->source, uh->dest, udptable);
 	if (sk) {
 		int ret;
+		printk("\nudp4_lib_rcv sk=%p sk->sk_state=%d saddr=%d sport=%d daddr=%d dport=%d\n", sk, sk->sk_state, saddr, uh->source, daddr, uh->dest);
 
 		if (inet_get_convert_csum(sk) && uh->check && !IS_UDPLITE(sk))
 			skb_checksum_try_convert(skb, IPPROTO_UDP, uh->check,

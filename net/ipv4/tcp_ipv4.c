@@ -1592,7 +1592,7 @@ lookup:
 			       th->dest);
 	if (!sk)
 		goto no_tcp_socket;
-	printk("\n%p sk->sk_state %d\n", sk, sk->sk_state);
+	printk("\ntcp_v4_rcv sk=%p sk->sk_state=%d saddr=%d sport=%d daddr=%d dport=%d\n", sk, sk->sk_state, iph->saddr, th->source, iph->daddr, th->dest);
 
 process:
 	if (sk->sk_state == TCP_TIME_WAIT)
