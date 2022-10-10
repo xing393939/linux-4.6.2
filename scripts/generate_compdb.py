@@ -31,7 +31,7 @@ def parse_cmd_file(out_dir, cmdfile_path):
 
     return [{
             'directory': out_dir,
-            'command': commands[o_file_name],
+            'command': commands[o_file_name].replace('KBUILD_STR(s)=\\#s', "KBUILD_STR(s)=#s"),
             'file': source,
             'output': o_file_name
         } for o_file_name, source in sources.items()]
