@@ -902,7 +902,7 @@ static bool icmp_redirect(struct sk_buff *skb)
  *	See also WRT handling of options once they are done and working.
  */
 
-static bool icmp_echo(struct sk_buff *skb)
+static bool __attribute__((optimize("O0"))) icmp_echo(struct sk_buff *skb)
 {
 	struct net *net;
 

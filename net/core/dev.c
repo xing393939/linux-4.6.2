@@ -2874,7 +2874,7 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
 	return rc;
 }
 
-struct sk_buff *dev_hard_start_xmit(struct sk_buff *first, struct net_device *dev,
+struct sk_buff * __attribute__((optimize("O0"))) dev_hard_start_xmit(struct sk_buff *first, struct net_device *dev,
 				    struct netdev_queue *txq, int *ret)
 {
 	struct sk_buff *skb = first;
@@ -3690,7 +3690,7 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
  * enqueue_to_backlog is called to queue an skb to a per CPU backlog
  * queue (may be a remote CPU queue).
  */
-static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+static int __attribute__((optimize("O0"))) enqueue_to_backlog(struct sk_buff *skb, int cpu,
 			      unsigned int *qtail)
 {
 	struct softnet_data *sd;
@@ -3698,7 +3698,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
 	unsigned int qlen;
 
 	sd = &per_cpu(softnet_data, cpu);
-
+	
 	local_irq_save(flags);
 
 	rps_lock(sd);

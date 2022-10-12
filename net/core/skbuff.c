@@ -4602,7 +4602,7 @@ void pkt_hex_dump(struct sk_buff *skb)
 	size_t len;
 	uint8_t *data, ch;
 
-	printk(KERN_INFO "pkt_hex_dump: ");
+	printk(KERN_INFO "pkt_hex_dump:%p: ", skb);
 	data = (uint8_t *)skb_mac_header(skb);
 	len = skb->tail - skb->mac_header;
 
