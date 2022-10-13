@@ -1,7 +1,7 @@
 #ifndef __SERVER_H__
 #define __SERVER_H__
 
-#include "common.h"
+#include "../test_common/common.h"
 
 #define BACKLOG 501          /* listen backlog. */
 #define BUFFER_LEN 16 * 1024 /* send or recv buffer len. */

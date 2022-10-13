@@ -11,6 +11,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "server.h"
 
@@ -46,7 +47,11 @@ int main(int argc, char **argv)
     {
         set_addr("eth0", "10.0.2.0");
     }
-    else if (strcmp(argv[1], "c") == 0)
+    else if (strcmp(argv[1], "e") == 0)
+    {
+        proc_busybox(argv);
+    }
+    else if (strcmp(argv[1], "t") == 0)
     {
         proc_client("10.0.2.2", 22, SEND_DATA);
         // proc_client(SERVER_IP, SERVER_PORT, SEND_DATA);
@@ -64,15 +69,18 @@ int main(int argc, char **argv)
     return 0;
 }
 
+int func()
+{
+    exit(0);
+}
+
 void proc_busybox(char **arr)
 {
-    int pid = fork();
-    if (pid == 0)
+    void *stack = malloc(8192);
+    int pid = clone(func, stack, 0x40000000 | 0x08000000, 0);
+    if (pid < 0)
     {
-        if (execv("/busybox", arr) < 0)
-        {
-            LOG_SYS_ERR("execv error");
-        }
+        LOG_SYS_ERR("execv error");
     }
 }
 
